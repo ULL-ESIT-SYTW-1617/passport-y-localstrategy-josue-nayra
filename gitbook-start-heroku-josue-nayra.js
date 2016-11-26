@@ -60,47 +60,12 @@ var escribir_gulpfile = (() => {
 
 });
 
-
-//-------------------------------------------------------------------------------------------------
-
-var bd_existsDropbox = (() =>
-{
-    return new Promise((resolve,reject) =>
-    {
-        var schema = [
-          {
-            name: "dispone_bd",
-            message: "Dispone de base de datos en Dropbox?",
-            type: 'list',
-            default: 'Si',
-            choices: ['Si', 'No']
-          }
-        ];
-
-        inquirer.prompt(schema).then((respuestas) =>
-        {
-            console.log("Disposición de BD:"+respuestas.dispone_bd);
-            resolve(respuestas.dispone_bd);
-        });
-    });
-});
-
 //-------------------------------------------------------------------------------------------------
 
 var get_token = ((dispone_bd) =>
 {
   return new Promise((resolve,reject) =>
   {
-      var mensaje;
-      console.log("Dispone de base de datos en get_token:"+dispone_bd);
-      if(dispone_bd == 'Si')
-      {
-        mensaje = "Link to the BD:";
-      }
-      else
-      {
-        mensaje = "Path in Dropbox for building BD:";
-      }
 
       var schema =
       [
@@ -110,7 +75,7 @@ var get_token = ((dispone_bd) =>
           },
           {
             name: "link_bd",
-            message: mensaje
+            message: "Link to the Dropbox Database"
           },
           {
             name: "authentication",
@@ -129,70 +94,15 @@ var get_token = ((dispone_bd) =>
 });
 
 //-------------------------------------------------------------------------------------------------
-var subir_bd = ((datos) =>
-{
-    return new Promise((resolve, reject) =>
-    {
-      if(fs.existsSync(path.join(basePath,'users_bd.json'))) //plantilla
-      {
-        fs.readFile(path.join(basePath,'users_bd.json'), (err, data) =>
-        {
-          if(err) throw err;
-
-          console.log("DATAAAAA:"+data);
-
-	  dbx = new Dropbox({ accessToken: resolve.token_dropbox });
-
-	  dbx.filesUpload({path: '/'+resolve.link_bd, contents: data})
-		.then(function(response)
-		{
-			resolve(response);
-		})
-		.catch(function(err)
-		{
-			console.log("No se ha subido correctamente la bd al dropbox. Error:"+err);
-			throw err;
-		});
-        });
-      }
-      else
-      {
-          console.log("No ha rellenado la plantilla... Rellenala porfavor.");  
-
-      }
-    });
-});
-
-//-------------------------------------------------------------------------------------------------
 
 var obtener_variables = (() =>
 {
     return new Promise((result,reject) =>
     {
-        var dispone_bd;
-
-        bd_existsDropbox().then((resolve,reject) =>
-        {
-            dispone_bd = resolve;
-            get_token(dispone_bd).then((resolve1,reject1) =>
+            get_token().then((resolve,reject) =>
             {
-                  var respuesta = resolve1;
-                  if(dispone_bd == 'Si')
-                  {
-                      //Pregunto donde esta el fichero
-                      result(respuesta);
-                  }
-                  else
-                  {
-                      // //No existe fichero en Dropbox
-                      subir_bd(resolve1).then((resolve2,reject2) =>
-                      {
-                          result(respuesta);
-                      });
-                  }
+                  result(resolve);
             });
-        });
-
     });
 });
 //-------------------------------------------------------------------------------------------------
@@ -260,7 +170,7 @@ var build_tokenHeroku = (() =>
       }
 
       // console.log("Token heroku:"+stdout);
-      
+
       var aux = stdout.replace("\n","");
       var datos = { token_heroku : aux };
 
@@ -372,11 +282,8 @@ var get_AppsHeroku = ((Appname)=>
       heroku.get('/apps').then(apps => {
           for(var d in apps)
           {
-            //console.log("Nombre app:"+apps[d].name);
-            //console.log("Appname:"+Appname);
             if(Appname == apps[d].name)
             {
-              // console.log("Ya existe la aplicacion");
               res = false;
             }
           }
@@ -393,65 +300,65 @@ var crear_app = (() => {
     get_tokenHeroku().then((resolve, reject) =>
     {
       heroku = new Heroku({ token: resolve });
-	
+
       get_AppName().then((resolve1,reject1) =>
       {
         get_AppsHeroku(resolve1).then((resolve2,reject2) =>
         {
           if(resolve2 != false){
-              try
-                {
-             	    heroku.post('/apps', {body: {name: resolve1}}).then((app) => {
-        
-                    var respuesta = JSON.stringify(app);
-                    // console.log("App:"+respuesta);
-                    var respuesta1 = JSON.parse(respuesta);
-                    var git_url = respuesta1.git_url;
-                    console.log("Git url:"+respuesta1.git_url);
-                    git()
-                      .init()
-                      .add('./*')
-                      .commit("Deploy to Heroku")
-                      .addRemote('heroku', git_url);
-                    
-                    console.log("Creando app.js y Procfile");
-                    fs.copy(path.join(__dirname,'template','app.js'), path.join(basePath, 'app.js'));
-                    fs.copy(path.join(__dirname,'template','Procfile'), path.join(basePath, 'Procfile'));
-                    
-                    fs.copy(path.join(__dirname,'template','views'), path.join(basePath,'views'), (err) =>
-                    {
-                    	if(err)
-                    	{
-                    	  console.log(err);
-                    	  throw err;
-                    	}
-                    });
-                    
-                    //Copiamos ficheros necesarios para el uso de materialize
-                    fs.copy(path.join(__dirname,'template','public'), path.join(basePath, 'public'), (err) =>
-                    {
-                    	if(err)
-                    	{
-                    	  console.log("Error:"+err);
-                    	  throw err;
-                    	}
-                    });
-                    
-                    result(respuesta1.git_url);
-        	        });
-         
-                }
-        	      catch(e)
+             	    heroku.post('/apps', {body: {name: resolve1}})
+                    .then((app) => {
+                      var respuesta = JSON.stringify(app);
+                      var respuesta1 = JSON.parse(respuesta);
+                      var git_url = respuesta1.git_url;
+                      console.log("Git url:"+respuesta1.git_url);
+                      git()
+                        .init()
+                        .add('./*')
+                        .commit("Deploy to Heroku")
+                        .addRemote('heroku', git_url);
+
+                      console.log("Creando app.js y Procfile");
+                      fs.copy(path.join(__dirname,'template','app.js'), path.join(basePath, 'app.js'));
+                      fs.copy(path.join(__dirname,'template','Procfile'), path.join(basePath, 'Procfile'));
+
+                      fs.copy(path.join(__dirname,'template','views'), path.join(basePath,'views'), (err) =>
+                      {
+                      	if(err)
+                      	{
+                      	  console.log(err);
+                      	  throw err;
+                      	}
+                      });
+
+                      //Copiamos ficheros necesarios para el uso de materialize
+                      fs.copy(path.join(__dirname,'template','public'), path.join(basePath, 'public'), (err) =>
+                      {
+                      	if(err)
+                      	{
+                      	  console.log("Error:"+err);
+                      	  throw err;
+                      	}
+                      });
+
+                      result(respuesta1.git_url);
+          	    })
+        	      .catch((e) =>
         	      {
-        		      throw e;	
-                }  
+                  console.log("Error:"+e);
+            			console.log("Pruebe a realizar las siguientes acciones:");
+            			console.log("1.-Cambie el nombre de su app");
+            			console.log("2.-Compruebe que el número de aplicaciones en su cuenta de Heroku es menor que el máximo permitido");
+                  console.log("3.-Vuelva a ejecutar el comando gitbook-start --deploy heroku");
+        		      throw e;
+                });
           }
           else {
             console.log("Nombre de aplicación no disponible...");
           }
-           
+
         });
-        
+
       });
     });
   });

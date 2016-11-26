@@ -118,7 +118,7 @@ var app = express();
 
 // Configure view engine to render EJS templates.
 app.use(express.static(path.join(__dirname,'gh-pages/')));
-// app.use(express.static(path.join(__dirname,'public/')));
+app.use(express.static(path.join(__dirname,'public/')));
 app.set("views", __dirname+'/views');
 app.set('view engine', 'ejs');
 app.use(expressLayouts);

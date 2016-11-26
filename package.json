@@ -1,6 +1,6 @@
 {
   "name": "gitbook-start-heroku-P8-josue-nayra",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Plugin that lets users to deploy a gitbook in Heroku",
   "main": "gitbook-start-heroku-josue-nayra.js",
   "scripts": {
@@ -38,6 +38,7 @@
   },
   "homepage": "https://github.com/ULL-ESIT-SYTW-1617/gitbook-start-heroku-josue-nayra#readme",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
@@ -57,6 +58,7 @@
     "octonode": "^0.7.6",
     "passport": "^0.3.2",
     "passport-github": "^1.1.0",
+    "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "prompt": "^1.0.0",
     "simple-git": "^1.62.0"
