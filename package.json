@@ -1,6 +1,6 @@
 {
   "name": "gitbook-start-heroku-P8-josue-nayra",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Plugin that lets users to deploy a gitbook in Heroku",
   "main": "gitbook-start-heroku-josue-nayra.js",
   "scripts": {
