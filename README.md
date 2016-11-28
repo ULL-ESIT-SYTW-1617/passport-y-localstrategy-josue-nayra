@@ -1,8 +1,8 @@
 # Práctica 8. Sistemas y Tecnologías Web
 
-## Passport-y-localstrategy-josue-nayra 
+## Passport-y-localstrategy-josue-nayra
 
-El servidor proveído por el plugin (sea iaas o heroku) deberá autenticar que el lector del libro pertenece a una organización dada de GitHub (por ejemplo ULL-ESIT-SYTW-1617). 
+El servidor proveído por el plugin (sea iaas o heroku) deberá autenticar que el lector del libro pertenece a una organización dada de GitHub (por ejemplo ULL-ESIT-SYTW-1617).
 Si es el caso que pertenece podrá seguir leyendo el libro, sino será redirigido a la ruta de autenticación.
 
 -----
@@ -10,14 +10,14 @@ Si es el caso que pertenece podrá seguir leyendo el libro, sino será redirigid
 ### Pasos a seguir para la utilización de los plugins
 
 **1-** Descargar el paquete inicial: **gitbook-start-josue-nayra**
-    
+
 ```bash
-$ npm install -g gitbook-start-josue-nayra 
+$ npm install -g gitbook-start-josue-nayra
 ```
 
 
 **2-** Crear el **libro** mediante el comando:
-    
+
 ```bash
 $ gitbook-start -d <directorio> --autor <autor> --name <nombre_libro> --url <url_repo>
 ```
@@ -33,13 +33,13 @@ $ cd <directorio en el que se ha desplegado el libro>
 
 
 **4-** Instalar las **dependencias** necesarias mediante el comando:
-    
+
 ```bash
-$ npm install 
+$ npm install
 ```
 
 **5-** Instalar el **plugin** requerido como dependendecia con la opción --save, como por ejemplo: **gitbook-start-heroku-ull-es-josue-nayra** para el despliegue en Heroku.
-    
+
 ```bash
 $ npm install --save gitbook-start-heroku-P8-josue-nayra
 ```
@@ -70,11 +70,11 @@ $ gulp build
 
 **10-** Subir a **Dropbox** el archivo con nuestra base de datos con la siguiente estructura en formato **JSON**:
 
-```JSON
+```javascript
 {
   "users":[
     {"username":"Josue", "password":"cacatua", "displayName":"Josue Toledo"},
-    . . .
+    //...
     {"username":"Nayra", "password":"loro", "displayName":"Nayra Rodríguez"}
   ]
 }
@@ -82,12 +82,12 @@ $ gulp build
 
 
 **11-** Una vez que hemos instalado el plugin de Heroku, ejecutamos el **deploy**:
-   
+
 ```bash
 $ gitbook-start --deploy heroku  
 ```
 
-Una vez ejecutado el comando anterior, se generará automáticamente en el gulpfile.js una tarea llamada 
+Una vez ejecutado el comando anterior, se generará automáticamente en el gulpfile.js una tarea llamada
 "deploy-<máquina en la que realizar el despliegue>" que permitirá al usuario actualizar el contenido de dicha máquina.
 
 ```javascript
@@ -99,8 +99,8 @@ gulp.task("deploy-<máquina en la que realizar el despliegue>", function(){
 
 **12-** Realizar el **despliegue**. Ahora el usuario podrá ejecutar el siguiente comando y se le actualizarán los cambios en el Gitbook desplegado en Heroku:
 
-``` 
-$ gulp deploy-heroku 
+```
+$ gulp deploy-heroku
 ```
 
 -----
@@ -164,9 +164,9 @@ $ gulp deploy-heroku
 
 - [Plugin npm para el despliegue con Heroku Práctica 8](https://www.npmjs.com/package/gitbook-start-heroku-P8-josue-nayra)
 
-- [Repositorio del plugin Heroku Práctica 8](https://github.com/ULL-ESIT-SYTW-1617/passport-y-localstrategy-josue-nayra) 
+- [Repositorio del plugin Heroku Práctica 8](https://github.com/ULL-ESIT-SYTW-1617/passport-y-localstrategy-josue-nayra)
 
-- [Repositorio del plugin IAAS](https://github.com/ULL-ESIT-SYTW-1617/gitbook-start-iaas-ull-es-josue-nayra) 
+- [Repositorio del plugin IAAS](https://github.com/ULL-ESIT-SYTW-1617/gitbook-start-iaas-ull-es-josue-nayra)
 
 - [Repositorio de gitbook-start-josue-nayra (main)](https://github.com/ULL-ESIT-SYTW-1617/crear-repositorio-en-github-josue-nayra)
 

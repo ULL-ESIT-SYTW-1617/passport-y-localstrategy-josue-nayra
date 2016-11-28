@@ -12,9 +12,11 @@ var expressLayouts = require('express-ejs-layouts');
 var Dropbox = require('dropbox');
 var dbx = new Dropbox({accessToken: datos_config.token_dropbox});
 var bcrypt = require("bcrypt-nodejs");
+var queries_bd = require(path.join(basePath,'public','js','queries.js'));
 var users;
 var datos;
 var nombre_bd;
+var error;
 
 passport.use(new LocalStrategy(
   function(username, password, cb) {
@@ -32,22 +34,17 @@ passport.use(new LocalStrategy(
 
               console.log("USERS:"+users);
 
-              var queries_bd = require(path.join(basePath,'public','js','queries.js'));
 
               queries_bd.findByUsername(datos.users,username, function(err, usuario)
               {
-                console.log("USUARIO:"+usuario.username+",passs:"+usuario.password);
-                console.log("password:"+password);
                 if(err)
                 {
-                  console.log("1");
                   return cb(err);
                 }
                 if(!usuario){
                   console.log("El usuario no se encuentra en la base de datos");
                   return cb(null,false);
                 }
-                console.log("Usuario encontrado:"+JSON.stringify(usuario));
 
                 try {
                   if(bcrypt.compareSync(password, usuario.password) == false)
@@ -65,16 +62,15 @@ passport.use(new LocalStrategy(
                   if(password == usuario.password)
                   {
                     //No está encriptada
-                      console.log("EAAA");
                       var new_password = password;
                       var hash = bcrypt.hashSync(new_password);
 
                       for(var i=0,len = users.length; i < len; i++)
                       {
-                         console.log("i:"+i, "Name:"+users[i].username);
+                        //  console.log("i:"+i, "Name:"+users[i].username);
                          if(users[i].username == username)
                          {
-                           console.log("ENCONTRADO");
+                          //  console.log("ENCONTRADO");
                            users[i].password = hash;
                            break;
                          }
@@ -163,7 +159,7 @@ app.post('/change_password_return', function(req,res)
     var new_password = req.query.new_pass;
     var hash = bcrypt.hashSync(new_password);
     var new_password_encripted = bcrypt.compareSync(new_password, hash);
-    
+
     console.log("hash:"+hash);
     //ACTUALIZAMOS CONTENIDO DE USERS
     for(var i=0,len = users.length; i < len; i++)
@@ -174,17 +170,18 @@ app.post('/change_password_return', function(req,res)
          break;
        }
     }
-    //SUBIMOS FICHERO A DROPBOX
-    dbx.filesUpload({path: '/'+nombre_bd, contents: JSON.stringify(datos), mode: "overwrite"})
-  	.then(function(response)
-  	{
-  		res.render('login',{user:req.user});
-  	})
-  	.catch(function(err)
-  	{
-  		console.log(err);
-  		res.redirect('/error');
-  	});
+
+    actualizando_bd().then((resolve,reject)=>
+    {
+      console.log("RESOLVE:"+JSON.stringify(resolve));
+      console.log("REJECT:"+JSON.stringify(reject));
+      if(reject != null)
+      {
+        error = "Su password no se ha podido cambiar. Inténtelo de nuevo";
+        res.redirect('/error');
+      }
+      res.render('login', {user: req.user});
+    });
   	return false;
 });
 
@@ -193,9 +190,136 @@ app.get('/inicio_gitbook', function(req,res)
     res.sendFile(path.join(__dirname,'gh-pages','introduccion.html'));
 });
 
+app.get('/registro', function(req,res)
+{
+    res.render('registro.ejs');
+});
+
+var descarga_bd = (() =>
+{
+  return new Promise((resolve,reject)=>
+  {
+    console.log("descarga_bd");
+    if(users == null)
+    {
+      dbx.sharingGetSharedLinkFile({ url: datos_config.link_bd})
+        .then(function(data)
+        {
+          console.log("hola");
+          nombre_bd = data.name;
+          datos = JSON.parse(data.fileBinary);
+          users = datos.users;
+          resolve(users);
+        })
+        .catch(function(err)
+        {
+          console.log(err);
+        });
+    }
+    else
+    {
+        resolve(users);
+    }
+  });
+});
+
+var actualizando_bd = (() =>
+{
+    //SUBIMOS FICHERO A DROPBOX
+    return new Promise((resolve,reject) =>
+    {
+      try {
+        dbx.filesUpload({path: '/'+nombre_bd, contents: JSON.stringify(datos), mode: "overwrite"})
+          .then(function(response)
+          {
+            console.log("RESPONSE:"+JSON.stringify(response));
+            resolve(response);
+          });
+      } catch (err) {
+        console.log("ERROR:"+JSON.stringify(err));
+        error = "No se ha podido actualizar la Base de Datos en Dropbox";
+        reject(error);
+      }
+    });
+});
+
+app.get('/registro_return', function(req, res)
+{
+    //Cargamos la base de datos --> podriamos modularizarlo
+    console.log("Username:"+req.query.username);
+    console.log("Password:"+req.query.password);
+    console.log("displayName:"+req.query.displayName);
+
+    var new_password = req.query.password;
+    var hash = bcrypt.hashSync(new_password);
+
+    console.log("hash:"+hash);
+
+    descarga_bd().then((resolve,reject) =>
+    {
+          console.log("Usuarios promesa:"+JSON.stringify(resolve));
+
+          // actualizando_bd(req.query.username,hash,req.query.displayName);
+          //ACTUALIZAMOS CONTENIDO DE USERS
+          users.push({
+            "username": req.query.username,
+            "password": hash,
+            "displayName": req.query.displayName
+          });
+
+          actualizando_bd().then((resolve,reject)=>
+          {
+            console.log("RESOLVE:"+JSON.stringify(resolve));
+            console.log("REJECT:"+JSON.stringify(reject));
+            if(reject != null)
+            {
+              res.redirect('/');
+            }
+            res.redirect('/');
+          });
+    });
+});
+
+app.get('/borrar_cuenta', function(req,res)
+{
+    descarga_bd().then((resolve,reject) =>
+    {
+        if(resolve != null)
+        {
+          console.log("Usuario en borrar_cuenta:"+req.user.username);
+
+          for(var i=0,len = users.length; i < len; i++)
+          {
+            var record = users[i];
+            console.log("RECORD:"+JSON.stringify(record));
+            if(record.username == req.user.username)
+            {
+              console.log("ENCONTRADO PA BORRAR");
+              delete users.splice(i,1);
+              break;
+            }
+          }
+          console.log("Users:"+JSON.stringify(users));
+
+          actualizando_bd().then((resolve,reject)=>
+          {
+            console.log("RESOLVE:"+JSON.stringify(resolve));
+            console.log("REJECT:"+JSON.stringify(reject));
+            if(reject != null)
+            {
+              error = "Error al borrar la cuenta";
+              res.redirect('/error');
+            }
+            res.redirect('/logout');
+          });
+        }
+    });
+});
+
 app.get('/error', function(req, res)
 {
     console.log("Info del usuario:"+req.user);
+    var respuesta = error || "No se ha podido realizar la operación";
     res.render('error', { error: "Imposible el acceso. No se encuentra el usuario."});
 });
 
