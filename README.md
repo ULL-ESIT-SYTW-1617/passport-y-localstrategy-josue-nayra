@@ -80,6 +80,9 @@ $ gulp build
 }
 ```
 
+**NOTA:** En el caso de que por cualquier razón cambiemos nuestra base de datos en Dropbox, debemos modificar el link asociado al fichero de BD en Dropbox en nuestro archivo local '*.secret.json*' 
+(sólo en el caso de que anteriormente hayamos hecho un "*$gitbook-start --deploy heroku*" y por lo tanto nuestro fichero ya tendrá variables de configuración, entre ellas el link de la BD.). 
+
 
 **11-** Una vez que hemos instalado el plugin de Heroku, ejecutamos el **deploy**:
 
