@@ -157,33 +157,38 @@ app.get('/change_password', function(req,res)
 
 app.post('/change_password_return', function(req,res)
 {
-    var new_password = req.query.new_pass;
-    var hash = bcrypt.hashSync(new_password);
-    var new_password_encripted = bcrypt.compareSync(new_password, hash);
-
-    console.log("hash:"+hash);
-    //ACTUALIZAMOS CONTENIDO DE USERS
-    for(var i=0,len = users.length; i < len; i++)
+  if(bcrypt.compareSync(req.query.old_pass, req.user.password))
+  {
+  console.log("EA");
+  actualizando_password(req.query.new_pass,req.user.username).then((resolve,reject) =>
+  {
+    console.log("Comprobar password return");
+    if(reject != null)
     {
-       if(users[i].username == req.user.username)
-       {
-         users[i].password = hash;
-         break;
-       }
+      res.redirect('/error');
     }
-
-    actualizando_bd().then((resolve,reject)=>
+    else
     {
-      console.log("RESOLVE:"+JSON.stringify(resolve));
-      console.log("REJECT:"+JSON.stringify(reject));
-      if(reject != null)
+      actualizando_bd().then((resolve,reject)=>
       {
-        error = "Su password no se ha podido cambiar. Inténtelo de nuevo";
-        res.redirect('/error');
-      }
-      res.render('login', {user: req.user});
-    });
-  	return false;
+        console.log("RESOLVE:"+JSON.stringify(resolve));
+        console.log("REJECT:"+JSON.stringify(reject));
+        if(reject != null)
+        {
+          error = "Su password no se ha podido cambiar. Inténtelo de nuevo";
+          res.redirect('/error');
+        }
+        res.render('login', {user: req.user});
+      });
+      return false;
+    }
+  });
+  }
+  else
+  {
+    error = "Password incorrecto";
+    res.redirect('/error');
+  }
 });
 
 app.get('/inicio_gitbook', function(req,res)
@@ -194,54 +199,6 @@ app.get('/inicio_gitbook', function(req,res)
 app.get('/registro', function(req,res)
 {
     res.render('registro.ejs');
-});
-
-var descarga_bd = (() =>
-{
-  return new Promise((resolve,reject)=>
-  {
-    console.log("descarga_bd");
-    if(users == null)
-    {
-      dbx.sharingGetSharedLinkFile({ url: datos_config.link_bd})
-        .then(function(data)
-        {
-          console.log("hola");
-          nombre_bd = data.name;
-          datos = JSON.parse(data.fileBinary);
-          users = datos.users;
-          resolve(users);
-        })
-        .catch(function(err)
-        {
-          console.log(err);
-        });
-    }
-    else
-    {
-        resolve(users);
-    }
-  });
-});
-
-var actualizando_bd = (() =>
-{
-    //SUBIMOS FICHERO A DROPBOX
-    return new Promise((resolve,reject) =>
-    {
-      try {
-        dbx.filesUpload({path: '/'+nombre_bd, contents: JSON.stringify(datos), mode: "overwrite"})
-          .then(function(response)
-          {
-            console.log("RESPONSE:"+JSON.stringify(response));
-            resolve(response);
-          });
-      } catch (err) {
-        console.log("ERROR:"+JSON.stringify(err));
-        error = "No se ha podido actualizar la Base de Datos en Dropbox";
-        reject(error);
-      }
-    });
 });
 
 app.get('/registro_return', function(req, res)
@@ -330,6 +287,77 @@ app.get('/logout',function(req,res){
   res.redirect('/');
 });
 
+var descarga_bd = (() =>
+{
+  return new Promise((resolve,reject)=>
+  {
+    console.log("descarga_bd");
+    if(users == null)
+    {
+      dbx.sharingGetSharedLinkFile({ url: datos_config.link_bd})
+        .then(function(data)
+        {
+          console.log("hola");
+          nombre_bd = data.name;
+          datos = JSON.parse(data.fileBinary);
+          users = datos.users;
+          resolve(users);
+        })
+        .catch(function(err)
+        {
+          console.log(err);
+        });
+    }
+    else
+    {
+        resolve(users);
+    }
+  });
+});
+
+var actualizando_bd = (() =>
+{
+    //SUBIMOS FICHERO A DROPBOX
+    return new Promise((resolve,reject) =>
+    {
+      try {
+        dbx.filesUpload({path: '/'+nombre_bd, contents: JSON.stringify(datos), mode: "overwrite"})
+          .then(function(response)
+          {
+            console.log("RESPONSE:"+JSON.stringify(response));
+            resolve(response);
+          });
+      } catch (err) {
+        console.log("ERROR:"+JSON.stringify(err));
+        error = "No se ha podido actualizar la Base de Datos en Dropbox";
+        reject(error);
+      }
+    });
+});
+
+var actualizando_password = ((new_pass, username)=>
+{
+  return new Promise((resolve,reject) =>
+  {
+    console.log("Comprobar password");
+    console.log("New_pass:"+new_pass);
+    console.log("Username:"+username);
+    var new_password = new_pass;
+    var hash = bcrypt.hashSync(new_password);
+
+    for(var i=0,len = users.length; i < len; i++)
+    {
+       console.log("i:"+i, "Name:"+users[i].username);
+       if(users[i].username == username)
+       {
+         console.log("ENCONTRADO");
+         users[i].password = hash;
+         resolve(datos);
+        //  break;
+       }
+    }
+  });
+});
 
 app.listen(process.env.PORT || 8080);
 
