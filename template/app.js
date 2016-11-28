@@ -76,17 +76,18 @@ passport.use(new LocalStrategy(
                          }
                       }
 
-                      dbx.filesUpload({path: '/'+nombre_bd, contents: JSON.stringify(datos), mode: "overwrite"})
-                        .then(function(response)
+                      actualizando_bd().then((resolve,reject)=>
+                      {
+                        console.log("RESOLVE:"+JSON.stringify(resolve));
+                        console.log("REJECT:"+JSON.stringify(reject));
+                        if(reject != null)
                         {
-                          console.log("Response:"+JSON.stringify(response));
-                        })
-                        .catch(function(err)
-                        {
-                          console.error(err);
-                        });
+                          error = "No se encuentra el usuario";
+                          return cb(null,false);
+                        }
+                      });
 
-                        return cb(null,usuario);
+                      return cb(null,usuario);
                   }
                   return cb(null,false);
                 }
