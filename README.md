@@ -6,9 +6,6 @@ El servidor proveído por el plugin (sea iaas o heroku) deberá autenticar que e
 Si es el caso que pertenece podrá seguir leyendo el libro, sino será redirigido a la ruta de autenticación.
 
 
-[Plugin: gitbook-start-heroku-josue-nayra](https://github.com/ULL-ESIT-SYTW-1617/gitbook-start-heroku-josue-nayra)
-
-
 ### Pasos a seguir para la utilización de los plugins
 
 1- Descargar el paquete inicial: *gitbook-start-josue-nayra*
@@ -43,7 +40,7 @@ $ npm install
 5- Instalar el plugin requerido como dependendecia con la opción --save, como por ejemplo: **gitbook-start-heroku-ull-es-josue-nayra** para el despliegue en Heroku.
     
 ```bash
-$ npm install --save gitbook-start-heroku-josue-nayra
+$ npm install --save gitbook-start-heroku-P8-josue-nayra
 ```
 
 6- Es necesario tener el repositorio remoto actualizado. Para ello podemos ejecutar una de las tareas descritas en el gulpfile: **gulp push --mensaje <mensaje commit>**.
@@ -70,7 +67,18 @@ $ heroku login
 $ gulp build
 ```
 
-10- Una vez que hemos instalado el plugin de Heroku,  ejecutamos el deploy:
+10- Subir a Dropbox el archivo con nuestra base de datos con la siguiente estructura en formato JSON:
+```JSON
+{
+  "users":[
+    {"username":"Josue", "password":"cacatua", "displayName":"Josue Toledo"},
+    ...
+    {"username":"Nayra", "password":"loro", "displayName":"Nayra Rodríguez"}
+  ]
+}
+```
+
+11- Una vez que hemos instalado el plugin de Heroku,  ejecutamos el deploy:
    
 ```bash
 $ gitbook-start --deploy heroku  
@@ -86,7 +94,7 @@ gulp.task("deploy-<máquina en la que realizar el despliegue>", function(){
 ```
 
 
-11- Ahora el usuario podrá ejecutar el siguiente comando y se le actualizarán los cambios en el Gitbook desplegado en Heroku:
+12- Ahora el usuario podrá ejecutar el siguiente comando y se le actualizarán los cambios en el Gitbook desplegado en Heroku:
 
 ``` 
 $ gulp deploy-heroku 
