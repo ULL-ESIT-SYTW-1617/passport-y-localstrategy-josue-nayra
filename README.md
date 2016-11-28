@@ -90,14 +90,17 @@ $ gulp build
 $ gitbook-start --deploy heroku  
 ```
 
-Una vez ejecutado el comando anterior, se generará automáticamente en el gulpfile.js una tarea llamada
-"deploy-<máquina en la que realizar el despliegue>" que permitirá al usuario actualizar el contenido de dicha máquina.
+Una vez ejecutado el comando anterior, se pedirá automáticamente por pantalla lo siguiente:
 
-```javascript
-gulp.task("deploy-<máquina en la que realizar el despliegue>", function(){
-    require(path.join(basePath, 'node_modules','<plugin de depliegue>')).deploy(...);
-});
-```
+- **Token Dropbox.** Introducir su token de Dropbox. En el siguiente enlace podemos obtener un token.
+  [Generar Token](https://dropbox.github.io/dropbox-api-v2-explorer/#files_upload)
+
+- **Link Base de Datos.** En la siguiente imagen se aprecia cómo se copia el enlace del fichero de BD en su Dropbox.
+
+![](https://s11.postimg.org/rwbdngy0j/enlace_dropbox.png)
+
+- Si se requiere **autenticación**.
+
 
 
 **12-** Realizar el **despliegue**. Ahora el usuario podrá ejecutar el siguiente comando y se le actualizarán los cambios en el Gitbook desplegado en Heroku:
@@ -106,7 +109,8 @@ gulp.task("deploy-<máquina en la que realizar el despliegue>", function(){
 $ gulp deploy-heroku
 ```
 
------
+---------------------
+
 
 ### Tareas Gulp
 
