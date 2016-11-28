@@ -5,17 +5,18 @@
 El servidor proveído por el plugin (sea iaas o heroku) deberá autenticar que el lector del libro pertenece a una organización dada de GitHub (por ejemplo ULL-ESIT-SYTW-1617). 
 Si es el caso que pertenece podrá seguir leyendo el libro, sino será redirigido a la ruta de autenticación.
 
+-----
 
 ### Pasos a seguir para la utilización de los plugins
 
-1- Descargar el paquete inicial: *gitbook-start-josue-nayra*
+**1-** Descargar el paquete inicial: **gitbook-start-josue-nayra**
     
 ```bash
 $ npm install -g gitbook-start-josue-nayra 
 ```
 
 
-2- Crear el libro mediante el comando:
+**2-** Crear el **libro** mediante el comando:
     
 ```bash
 $ gitbook-start -d <directorio> --autor <autor> --name <nombre_libro> --url <url_repo>
@@ -24,61 +25,63 @@ $ gitbook-start -d <directorio> --autor <autor> --name <nombre_libro> --url <url
 Se construye así la estructura inicial por **gitbook-start**, es decir, la jerarquía de directorios conteniendo los scripts y ficheros markdown para el libro.
 
 
-3- Colocarse en la carpeta que contiene el libro.
+**3-** Colocarse en la carpeta que contiene el libro.
 
 ```bash
 $ cd <directorio en el que se ha desplegado el libro>
 ```
 
 
-4- Instalar las dependencias necesarias mediante el comando:
+**4-** Instalar las **dependencias** necesarias mediante el comando:
     
 ```bash
 $ npm install 
 ```
 
-5- Instalar el plugin requerido como dependendecia con la opción --save, como por ejemplo: **gitbook-start-heroku-ull-es-josue-nayra** para el despliegue en Heroku.
+**5-** Instalar el **plugin** requerido como dependendecia con la opción --save, como por ejemplo: **gitbook-start-heroku-ull-es-josue-nayra** para el despliegue en Heroku.
     
 ```bash
 $ npm install --save gitbook-start-heroku-P8-josue-nayra
 ```
 
-6- Es necesario tener el repositorio remoto actualizado. Para ello podemos ejecutar una de las tareas descritas en el gulpfile: **gulp push --mensaje <mensaje commit>**.
+**6-** Es necesario tener el **repositorio remoto actualizado**. Para ello podemos ejecutar una de las tareas descritas en el gulpfile: **gulp push --mensaje <mensaje commit>**.
 
-7- Nos logueamos en Heroku a través del siguiente comando:
+**7-** Nos logueamos en **Heroku** a través del siguiente comando:
 
 ```bash
 $ heroku login
 ```
 
 
-8- Ahora debemos asignarle un nombre a la aplicación de Heroku que se creará en el siguiente paso. Para ello accedemos al package.json y rellenamos la sección de Heroku:
+**8-** Ahora debemos asignarle un **nombre a la aplicación de Heroku** que se creará en el siguiente paso. Para ello accedemos al package.json y rellenamos la sección de Heroku:
 
 ```json
   "Heroku":{
-    "nombre_app": "<nombre de la aplicación"
-  },
+    "nombre_app": "nombre de la aplicación"
+  }
 ```
 
 
-9- Para construir el libro disponemos de una tarea en el gulpfile denominada "build".
+**9-** Para **construir el libro** disponemos de una tarea en el gulpfile denominada "build".
 
 ```bash
 $ gulp build
 ```
 
-10- Subir a Dropbox el archivo con nuestra base de datos con la siguiente estructura en formato JSON:
+**10-** Subir a **Dropbox** el archivo con nuestra base de datos con la siguiente estructura en formato **JSON**:
+
 ```JSON
 {
   "users":[
     {"username":"Josue", "password":"cacatua", "displayName":"Josue Toledo"},
-    ...
+    . . .
     {"username":"Nayra", "password":"loro", "displayName":"Nayra Rodríguez"}
   ]
 }
 ```
 
-11- Una vez que hemos instalado el plugin de Heroku,  ejecutamos el deploy:
+
+**11-** Una vez que hemos instalado el plugin de Heroku, ejecutamos el **deploy**:
    
 ```bash
 $ gitbook-start --deploy heroku  
@@ -94,12 +97,13 @@ gulp.task("deploy-<máquina en la que realizar el despliegue>", function(){
 ```
 
 
-12- Ahora el usuario podrá ejecutar el siguiente comando y se le actualizarán los cambios en el Gitbook desplegado en Heroku:
+**12-** Realizar el **despliegue**. Ahora el usuario podrá ejecutar el siguiente comando y se le actualizarán los cambios en el Gitbook desplegado en Heroku:
 
 ``` 
 $ gulp deploy-heroku 
 ```
 
+-----
 
 ### Tareas Gulp
 
@@ -146,28 +150,28 @@ con el nombre deploy-heroku.
 $ gulp deploy-heroku
 ```
 
+-----
 
 ### Enlaces
 
 - [Campus virtual](https://campusvirtual.ull.es/1617/course/view.php?id=1175)
 
-- [Descripción de la práctica](https://casianorodriguezleon.gitbooks.io/ull-esit-1617/content/practicas/practicaplugin2.html)
+- [Descripción de la práctica](https://casianorodriguezleon.gitbooks.io/ull-esit-1617/content/practicas/practicapassportlocal.html)
 
 - [Publicación del paquete gitbook-start-josue-nayra](https://www.npmjs.com/package/gitbook-start-josue-nayra)
 
-- [Plugin para el despliegue en IAAS](https://www.npmjs.com/package/gitbook-start-iaas-ull-es-josue-nayra)
+- [Plugin npm para el despliegue en IAAS](https://www.npmjs.com/package/gitbook-start-iaas-ull-es-josue-nayra)
 
-- [Plugin para el despliegue con Heroku](https://www.npmjs.com/package/gitbook-start-heroku-josue-nayra)
+- [Plugin npm para el despliegue con Heroku Práctica 8](https://www.npmjs.com/package/gitbook-start-heroku-P8-josue-nayra)
 
-- [Repositorio del plugin Heroku](https://github.com/ULL-ESIT-SYTW-1617/gitbook-start-heroku-josue-nayra/) 
+- [Repositorio del plugin Heroku Práctica 8](https://github.com/ULL-ESIT-SYTW-1617/passport-y-localstrategy-josue-nayra) 
 
 - [Repositorio del plugin IAAS](https://github.com/ULL-ESIT-SYTW-1617/gitbook-start-iaas-ull-es-josue-nayra) 
 
-- [Repositorio de gitbook-start-josue-nayra](https://github.com/ULL-ESIT-SYTW-1617/nueva-funcionalidad-para-el-paquete-npm-plugins-josue-nayra)
-
-- [Repositorio MAIN Heroku](https://github.com/ULL-ESIT-SYTW-1617/practica-plugins-heroku-josue-nayra)
+- [Repositorio de gitbook-start-josue-nayra (main)](https://github.com/ULL-ESIT-SYTW-1617/crear-repositorio-en-github-josue-nayra)
 
 
+-----
 
 ### Referencias
 
@@ -181,8 +185,10 @@ $ gulp deploy-heroku
 
 - [Construyendo package.json](https://docs.npmjs.com/files/package.json)
 
-- [Repo Drpbx](https://github.com/dropbox/dropbox-sdk-js/tree/master/examples)
-- http://dropbox.github.io/dropbox-sdk-js/Dropbox.html
+- [Repo Dropbox](https://github.com/dropbox/dropbox-sdk-js/tree/master/examples)
+
+
+-----
 
 ### Integrantes
 

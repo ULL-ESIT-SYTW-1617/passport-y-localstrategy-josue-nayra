@@ -41,7 +41,6 @@ passport.use(new LocalStrategy(
                 if(err)
                 {
                   console.log("1");
-                  throw err;
                   return cb(err);
                 }
                 if(!usuario){
@@ -95,7 +94,6 @@ passport.use(new LocalStrategy(
                   }
                   return cb(null,false);
                 }
-                return cb(null,usuario);
               });
           })
           .catch(function(err)
@@ -149,7 +147,7 @@ app.get('/',
     }
 });
 
-app.get('/login',
+app.post('/login',
   passport.authenticate('local', {failureRedirect: '/error'}),
   function(req,res) {
 	res.render('login', {user: req.user});
@@ -160,7 +158,7 @@ app.get('/change_password', function(req,res)
     res.render('changing_password',{user: req.user});
 });
 
-app.get('/change_password/return', function(req,res)
+app.post('/change_password_return', function(req,res)
 {
     var new_password = req.query.new_pass;
     var hash = bcrypt.hashSync(new_password);
@@ -178,15 +176,16 @@ app.get('/change_password/return', function(req,res)
     }
     //SUBIMOS FICHERO A DROPBOX
     dbx.filesUpload({path: '/'+nombre_bd, contents: JSON.stringify(datos), mode: "overwrite"})
-	.then(function(response)
-	{
-		res.redirect('/');
-	})
-	.catch(function(err)
-	{
-		console.log(err);
-	});
-	return false;
+  	.then(function(response)
+  	{
+  		res.render('login',{user:req.user});
+  	})
+  	.catch(function(err)
+  	{
+  		console.log(err);
+  		res.redirect('/error');
+  	});
+  	return false;
 });
 
 app.get('/inicio_gitbook', function(req,res)
