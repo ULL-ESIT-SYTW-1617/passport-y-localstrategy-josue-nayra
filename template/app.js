@@ -157,10 +157,9 @@ app.get('/change_password', function(req,res)
 
 app.post('/change_password_return', function(req,res)
 {
-  if(bcrypt.compareSync(req.query.old_pass, req.user.password))
+  if(bcrypt.compareSync(req.body.old_pass, req.body.password))
   {
-  console.log("EA");
-  actualizando_password(req.query.new_pass,req.user.username).then((resolve,reject) =>
+  actualizando_password(req.body.new_pass,req.body.username).then((resolve,reject) =>
   {
     console.log("Comprobar password return");
     if(reject != null)
@@ -201,14 +200,14 @@ app.get('/registro', function(req,res)
     res.render('registro.ejs');
 });
 
-app.get('/registro_return', function(req, res)
+app.post('/registro_return', function(req, res)
 {
     //Cargamos la base de datos --> podriamos modularizarlo
-    console.log("Username:"+req.query.username);
-    console.log("Password:"+req.query.password);
-    console.log("displayName:"+req.query.displayName);
+    // console.log("Username:"+req.body.username);
+    // console.log("Password:"+req.body.password);
+    // console.log("displayName:"+req.body.displayName);
 
-    var new_password = req.query.password;
+    var new_password = req.body.password;
     var hash = bcrypt.hashSync(new_password);
 
     console.log("hash:"+hash);
@@ -220,9 +219,9 @@ app.get('/registro_return', function(req, res)
           // actualizando_bd(req.query.username,hash,req.query.displayName);
           //ACTUALIZAMOS CONTENIDO DE USERS
           users.push({
-            "username": req.query.username,
+            "username": req.body.username,
             "password": hash,
-            "displayName": req.query.displayName
+            "displayName": req.body.displayName
           });
 
           actualizando_bd().then((resolve,reject)=>
