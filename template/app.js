@@ -157,10 +157,10 @@ app.get('/change_password', function(req,res)
 
 app.post('/change_password_return', function(req,res)
 {
-  if(bcrypt.compareSync(req.query.old_pass, req.user.password))
+  if(bcrypt.compareSync(req.body.old_pass, req.user.password))
   {
   console.log("EA");
-  actualizando_password(req.query.new_pass,req.user.username).then((resolve,reject) =>
+  actualizando_password(req.body.new_pass,req.user.username).then((resolve,reject) =>
   {
     console.log("Comprobar password return");
     if(reject != null)
